@@ -48,8 +48,6 @@ int main(int argc, char *argv[]) {
 
     // Solo envia los datos correctos
     if(strcmp(burst, "")){
-      printf("\n\n%d : %d\n", atoi(burst), atoi(priority));
-
       // Crea el hilo y lo pone a correr
       struct info_pcb new_info_pcb = {atoi(burst), atoi(priority)};
       pthread_create(&threads[thread_index], NULL, (void*)thread_action, (void*)&new_info_pcb);

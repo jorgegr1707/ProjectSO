@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
 
 // ##############################################
 // Abre el socket
@@ -40,12 +43,28 @@ void bind_to_port(int socket, int port){
 }
 
 
+// ##############################################
+// Se encarga de estar constantemente buscando clientes.
+// cuando encuentra uno, lo envia a la cola ## falta implementarlo
+// ##############################################
+void look_clients(){
+	while(1){
+		printf("###################################################\n");
+		sleep(1);
+	}
+	pthread_exit(0);
+}
+
+
 int main(){
+	
 	// Datos inutiles para respuesta
 	char * advice[] = {"4444", "1111", "3333", "2222", "888"};
 
+
 	// variables de sistema
 	const int PORT = 7200;
+
 
 	// Inicia el listener
 	int listener = open_socket();	
@@ -54,37 +73,60 @@ int main(){
 		return 0;
 	}
 
+
 	// Inicia el puerto 
 	bind_to_port(listener, PORT);
 	if (listen (listener, 10) == -1){
-		printf("no es posible escuchar\n");
+		printf("No es posible escuchar en este puerto\n");
 		return 0;
 	}
-
-	// Inicia el servidor
 	printf(" - - - Enlazado al puerto\n");
+
+
+	// Inicia el hilo que esta en constante busqueda de clientes
+	// ##### la funcion aun no est'a implementada
+	pthread_t look_for_clients;
+	pthread_create(&look_for_clients, NULL, (void*)look_clients, NULL);
+
+
+	// Ejecuta el algoritmo seleccionado
+	// ##### - - - - Falta implementarlo 
 	while(1){
 		struct sockaddr_storage client;
 		unsigned int addres_size = sizeof(client);
-		printf(" - - - Esperando al cliente...\n\n");
+		printf("\n- - - Esperando al cliente...\n");
 
-		// Verifica la conexion
+		// Verifica si algun cliente necesita el servicio
 		int connect = accept(listener, (struct sockaddr*)&client, &addres_size);
 		if (connect == -1){
-			printf("@ - - No se pudo conectar\n");
+			printf("- - - No se pudo conectar\n");
 		}
-		printf(" - - - Atendiendo al cliente\n");
+		printf("- - - Atendiendo al cliente\n");
 		
+		// Cuando se conecta un cliente 
+		// Debemos recorrer la cola e ir haciendo las cosas
+		// el hilo look_for_clients va llenando esa cola
+
 		// Recibe datos
 		char* buffer = malloc(10);
 		int bytesRecibidos = recv(connect, buffer, 10, 0);
 		printf("Recibidos: %s\n", buffer);
 
+
+		// Duerme un rato
+		srand(time(0));
+		int r = 8 + rand() % 4;
+		printf("- - - Voy a dormir: %d\n", r);
+		sleep(r);
+		
+
 		// Envia datos
-		sleep(1);
 		char *msg = advice[rand()%5];
 		send(connect, msg, strlen(msg), 0);
 		msg = NULL;
+		printf("- - - Le conteste a: %s\n", buffer);
 		close(connect);
 	}
+
+	pthread_join(look_for_clients, NULL);
 }
