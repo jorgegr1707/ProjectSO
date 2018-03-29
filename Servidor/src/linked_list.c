@@ -1,8 +1,10 @@
 #include "../headers/linked_list.h"
 
-int main()
+/*int main()
 {
-    int n, ch;
+    int n, ch, id = 0;
+    struct dnode *temp;
+            	
     do
     {
         printf("\n\nOperations on doubly linked list");
@@ -14,29 +16,32 @@ int main()
             case 1:
                 printf("\nEnter number: ");
                 scanf("%d", &n);
-                insert_by_burst(n);
+                insert_by_burst(n, id);
+                id++;
                 break;
             case 2:
-            	remove_first();
+            	temp = remove_first();
+            	printf("%d\n", temp->process->process_id);
                 break;
             case 3:
                 display();
                 break;
         }
     }while (ch != 0);
-}
+}*/
 
 
 //Add a new node at the end of the double linked list
-void append(int num)
+void append(int id, int burst, int priority)
 {
 	struct dnode *nptr, *temp = start;
 
 	//Create a new node
 	nptr = malloc(sizeof(struct dnode));
 	nptr->process = malloc(sizeof(struct process));
-	nptr->process->priority = num;
-	nptr->process->burst = num;
+	nptr->process->priority = priority;
+	nptr->process->burst = burst;
+	nptr->process->process_id = id;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -56,12 +61,14 @@ void append(int num)
 	}
 }
 
-void insert_by_burst(int num)
+void insert_by_burst(int id, int burst, int priority)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
 	nptr->process = malloc(sizeof(struct process));
-	nptr->process->burst = num;
+	nptr->process->priority = priority;
+	nptr->process->burst = burst;
+	nptr->process->process_id = id;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -70,7 +77,7 @@ void insert_by_burst(int num)
 	{
 		start = nptr;
 	}
-	else if(num < temp->process->burst)
+	else if(burst < temp->process->burst)
 	{	
 		nptr->next = start;
 		start->prev = nptr;
@@ -78,7 +85,7 @@ void insert_by_burst(int num)
 	}
 	else
 	{
-		while(temp->next != NULL && temp->next->process->burst < num)
+		while(temp->next != NULL && temp->next->process->burst < burst)
 			temp = temp->next;
 
 		nptr->next = temp->next;
@@ -93,12 +100,14 @@ void insert_by_burst(int num)
 	}
 }
 
-void insert_by_priority(int num)
+void insert_by_priority(int id, int burst, int priority)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
 	nptr->process = malloc(sizeof(struct process));
-	nptr->process->priority = num;
+	nptr->process->priority = priority;
+	nptr->process->burst = burst;
+	nptr->process->process_id = id;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -107,7 +116,7 @@ void insert_by_priority(int num)
 	{
 		start = nptr;
 	}
-	else if(num < temp->process->priority)
+	else if(priority < temp->process->priority)
 	{	
 		nptr->next = start;
 		start->prev = nptr;
@@ -115,7 +124,7 @@ void insert_by_priority(int num)
 	}
 	else
 	{
-		while(temp->next != NULL && temp->next->process->priority < num)
+		while(temp->next != NULL && temp->next->process->priority < priority)
 			temp = temp->next;
 
 		nptr->next = temp->next;
@@ -131,11 +140,12 @@ void insert_by_priority(int num)
 }
 
 //Deletes the first node from the double linked list
-void remove_first()
+struct dnode* remove_first()
 {
 	if(start == NULL)
 	{
 		printf("Linked List is empty\n");
+		return NULL;
 	}
 
 	else
@@ -154,7 +164,8 @@ void remove_first()
 			start = start->next;
 			start->prev = NULL;
 		}
-		free(temp);
+		return temp;
+		//free(temp);
 	}
 }
 

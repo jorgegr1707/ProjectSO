@@ -15,11 +15,11 @@ struct dnode
 
 struct dnode *start = NULL;
 
-void append(int);
+void append(int, int, int);
 void insert(int, int, int);
-void insert_by_burst(int);
-void insert_by_priority(int);
-void remove_first();
+void insert_by_burst(int, int, int);
+void insert_by_priority(int, int, int);
+struct dnode* remove_first();
 void display();
 
 #endif
