@@ -9,6 +9,9 @@ struct process
 	int process_id;
 	int burst;
 	int priority;
+	int waiting_time;
+	int arrival_time;
+	int turn_around_time;
 };
 
 #endif

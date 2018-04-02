@@ -11,61 +11,99 @@
 int rr;
 int burst;
 int algorithm_type;
+int clock_cpu = 0;
+int flag; //keep running or not
+
+void insert_ready_queue(int id, int burst, int priority, int waiting_time, int turn_around_time)
+{
+	switch (algorithm_type)
+	        {
+	            case 1:
+	                append(id, burst, priority, waiting_time, clock_cpu, turn_around_time);
+	                break;
+	            case 2:
+	            	insert_by_burst(id, burst, priority, waiting_time, clock_cpu, turn_around_time);
+	                break;
+	            case 3:
+	                insert_by_priority(id, burst, priority, waiting_time, clock_cpu, turn_around_time);
+	                break;
+	            case 4:
+	            	rr = 1;
+	            	append(id, burst, priority, waiting_time, clock_cpu, turn_around_time);
+	                break;
+	        }
+
+}
 
 void * job_scheduler_action(void * args)
 {
 	srand(time(0));
 	int burst; 
 	int priority;
-	for (int i = 0; i < 5; i++)
+	if(flag)
 	{
-		burst = (rand() % 6) + 1;
-		priority = (rand() % 10) + 1;
-		switch (algorithm_type)
-        {
-            case 1:
-                append(i, burst, priority);
-                break;
-            case 2:
-            	insert_by_burst(i, burst, priority);
-                break;
-            case 3:
-                insert_by_priority(i, burst, priority);
-                break;
-            case 4:
-            	rr = 1;
-            	append(i, burst, priority);
-                break;
+		for (int i = 0; i < 5; i++)
+		{
+			burst = (rand() % 6) + 1;
+			priority = (rand() % 10) + 1;
+			insert_ready_queue(i, burst, priority, 0, 0);
+			
 
-        }
+		}
+	
 	}
-	pthread_exit(0);
+	else
+	{
+		pthread_exit(0);
+	}
 }
 
 void * cpu_scheduler_action(void * args)
 {
 	struct dnode *temp;
 	temp = remove_first();
-	
-	while (temp != NULL)
-	{
-		printf("Ejecutando hilo: %d con burst: %d\n", temp->process->process_id,temp->process->burst);
+	int waiting_time;
 
-		if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
+	if(flag)
+	{
+		while (temp != NULL)
 		{
-			sleep(temp->process->burst);
-			temp->process->burst = 0;
-			printf("El proceso: %d ha terminado su ejecucion\n", temp->process->process_id);
+			printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
+
+			temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
+			
+			if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
+			{
+				sleep(temp->process->burst);
+				append_end(temp->process->process_id, 0, temp->process->priority, temp->process->waiting_time, temp->process->waiting_time + temp->process->burst);
+				printf("El proceso: %d ha terminado su ejecucion\n", temp->process->process_id);
+			}
+			else
+			{
+				sleep(burst);
+				temp->process->burst = temp->process->burst - burst;
+				insert_ready_queue(temp->process->process_id, temp->process->burst, temp->process->priority, temp->process->waiting_time, temp->process->waiting_time + burst);
+			}
+			temp = remove_first();
 		}
-		else
-		{
-			sleep(burst);
-			temp->process->burst = temp->process->burst - burst;
-			append(temp->process->process_id, temp->process->burst, temp->process->priority);
-		}
-		temp = remove_first();
+
 	}
-	pthread_exit(0);
+	else
+	{
+		pthread_exit(0);
+
+	}
+	
+}
+
+void * clock_action(void * args)
+{
+	while(flag)
+	{
+		clock_cpu++;
+		printf("Clock is: %d\n", clock_cpu);
+		sleep(1);
+	}
 }
 
 
@@ -82,13 +120,22 @@ int main()
     printf("\nBurst: ");
     scanf("%d", &burst);
 
-    pthread_t job_scheduler;
+    flag = 1;
+    pthread_t clock_thread, job_scheduler, cpu_scheduler;
+	pthread_create(&clock_thread, NULL, (void*)clock_action, NULL);
 	pthread_create(&job_scheduler, NULL, (void*)job_scheduler_action, NULL);
-	pthread_join(job_scheduler, NULL);
-
-	pthread_t cpu_scheduler;
 	pthread_create(&cpu_scheduler, NULL, (void*)cpu_scheduler_action, NULL);
-	pthread_join(cpu_scheduler, NULL);
+
+    while(1)
+    {
+    	
+		pthread_join(clock_thread, NULL);
+
+		pthread_join(job_scheduler, NULL);
+		
+		pthread_join(cpu_scheduler, NULL);
+	}
+    
 	
         
 }

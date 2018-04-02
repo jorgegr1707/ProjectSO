@@ -13,12 +13,13 @@ struct dnode
 	struct dnode *next;
 };
 
-struct dnode *start = NULL;
+struct dnode *start = NULL; //ready processes
+struct dnode *end = NULL; //finished processes
 
-void append(int, int, int);
-void insert(int, int, int);
-void insert_by_burst(int, int, int);
-void insert_by_priority(int, int, int);
+void append(int, int, int, int, int, int);
+void append_end(int, int, int, int, int);
+void insert_by_burst(int, int, int, int, int, int);
+void insert_by_priority(int, int, int, int, int, int);
 struct dnode* remove_first();
 void display();
 

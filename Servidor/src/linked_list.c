@@ -32,7 +32,7 @@
 
 
 //Add a new node at the end of the double linked list
-void append(int id, int burst, int priority)
+void append(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
 {
 	struct dnode *nptr, *temp = start;
 
@@ -42,6 +42,9 @@ void append(int id, int burst, int priority)
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
 	nptr->process->process_id = id;
+	nptr->process->waiting_time = waiting_time;
+	nptr->process->arrival_time = arrival_time;
+	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -61,7 +64,38 @@ void append(int id, int burst, int priority)
 	}
 }
 
-void insert_by_burst(int id, int burst, int priority)
+void append_end(int id, int burst, int priority, int waiting_time, int turn_around_time)
+{
+	struct dnode *nptr, *temp = end;
+
+	//Create a new node
+	nptr = malloc(sizeof(struct dnode));
+	nptr->process = malloc(sizeof(struct process));
+	nptr->process->priority = priority;
+	nptr->process->burst = burst;
+	nptr->process->process_id = id;
+	nptr->process->waiting_time = waiting_time;
+	nptr->process->turn_around_time = turn_around_time;
+	nptr->next = NULL;
+	nptr->prev = NULL;
+
+	// if linked list is empty
+	if (end == NULL)
+	{
+		end = nptr;
+	}
+	else
+	{
+		//traverse the linked list till the last node is reached
+		while(temp->next != NULL)
+			temp = temp->next;
+
+		nptr->prev = temp;
+		temp->next = nptr;
+	}
+}
+
+void insert_by_burst(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
@@ -69,6 +103,9 @@ void insert_by_burst(int id, int burst, int priority)
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
 	nptr->process->process_id = id;
+	nptr->process->waiting_time = waiting_time;
+	nptr->process->arrival_time = arrival_time;
+	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -100,7 +137,7 @@ void insert_by_burst(int id, int burst, int priority)
 	}
 }
 
-void insert_by_priority(int id, int burst, int priority)
+void insert_by_priority(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
@@ -108,6 +145,9 @@ void insert_by_priority(int id, int burst, int priority)
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
 	nptr->process->process_id = id;
+	nptr->process->waiting_time = waiting_time;
+	nptr->process->arrival_time = arrival_time;
+	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -182,3 +222,4 @@ void display()
 	}
 
 }
+
