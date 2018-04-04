@@ -46,7 +46,7 @@ void * job_scheduler_action(void * args)
 		{
 			burst = (rand() % 6) + 1;
 			priority = (rand() % 10) + 1;
-			insert_ready_queue(i, burst, priority, clock_cpu, 0);
+			insert_ready_queue(i, burst, priority, 0, 0);
 		}
 	
 	}
@@ -67,10 +67,11 @@ void * cpu_scheduler_action(void * args)
 		{
 			if (temp != NULL)
 			{
-				printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
 
 				temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
-				
+			
+				printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
+
 				if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
 				{
 					sleep(temp->process->burst);
