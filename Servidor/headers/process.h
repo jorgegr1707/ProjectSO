@@ -12,6 +12,7 @@ struct process
 	int waiting_time;
 	int arrival_time;
 	int turn_around_time;
+	int conection_id;
 };
 
 #endif

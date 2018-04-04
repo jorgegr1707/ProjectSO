@@ -3,6 +3,12 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <string.h>
+//
+#include <stdint.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <fcntl.h>
+#include <time.h>
 
 #include "../headers/linked_list.h"
 #include "linked_list.c"
@@ -13,6 +19,9 @@ int burst;
 int algorithm_type;
 int clock_cpu = 0;
 int flag; //keep running or not
+int id = 0;
+
+
 
 void insert_ready_queue(int id, int burst, int priority, int waiting_time, int turn_around_time)
 {
@@ -37,23 +46,46 @@ void insert_ready_queue(int id, int burst, int priority, int waiting_time, int t
 
 void * job_scheduler_action(void * args)
 {
-	srand(time(0));
-	int burst; 
-	int priority;
-	if(flag)
+
+	// Inicia el puerto
+	const int PORT = 7200;
+	begin_port(listener, PORT);
+
+	// Espera por clientes. Cuando encuentra uno, lo mte a la cola
+	printf(" - - - Enlazado al puerto\n");
+	while(1)
 	{
-		for (int i = 0; i < 5; i++)
-		{
-			burst = (rand() % 6) + 1;
-			priority = (rand() % 10) + 1;
-			insert_ready_queue(i, burst, priority, 0, 0);
-		}
-	
+		// Crea la estructura del cliente que se va a recibir
+		struct sockaddr_storage client;
+		unsigned int address_size = sizeof(client);
+		printf("\n - - - Esperando al cliente\n");
+
+		// Verifica si algun cliente necesita el servicio
+		int connect = accept(listener, (struct sockaddr*)&client, &address_size);
+		printf("- - - Atendiendo al cliente\n");
+		
+//.....................................................................................
+//.....................................................................................
+		// AQUI TOMA LA connect Y LO DEBE COLOCAR EN LA COLA
+		// ASI Recibe datos
+		char* buffer = malloc(10);
+		recv(connect, buffer, 10, 0);
+		
+		char string[10];
+		strcpy(string, buffer);
+		char *splitted_buffer[10];
+		//this makes the split
+		splitted_buffer[0] = strtok(string,"-"); //burst
+		splitted_buffer[1] = strtok(NULL,"-");	//priority
+		insert_ready_queue(id, atoi(splitted_buffer[0]), atoi(splitted_buffer[1]), 0, 0);
+		id++;
+
+
+		printf("Recibidos: %s\n", buffer);
+//.....................................................................................
+//.....................................................................................
 	}
-	else
-	{
-		pthread_exit(0);
-	}
+	pthread_exit(0);
 }
 
 void * cpu_scheduler_action(void * args)
@@ -114,7 +146,7 @@ void * clock_action(void * args)
 
 
 
-int main()
+/*int main()
 {
     
             	
@@ -147,9 +179,8 @@ int main()
 	}
 	// cuando el usuario decida se le deben mostrar las colas y cuando quiera terminar se le muestra la tabla y listo :)
     
-	
-        
-}
+
+}*/
 
 
 
