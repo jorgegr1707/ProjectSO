@@ -43,70 +43,86 @@ void bind_to_port(int socket, int port){
 }
 
 
+
+// ##############################################
+// Se encarga de iniciar el listener
+// ##############################################
+int begin_listener(){
+	int listener = open_socket();	
+	if (listener == -1){
+		printf("No se pudo iniciar el listener listener\n");
+		return 0;
+	}
+	return listener;
+}
+
+
+// ##############################################
+// Se encarga de iniciar el puesto de acceso 
+// - listener es el istener ya abierto
+// - PORT es el puesto al que se va a comunicar
+// ############################################## 
+void begin_port(int listener, int PORT){
+	bind_to_port(listener, PORT);
+	if (listen (listener, 10) == -1){
+		printf("No es posible escuchar en este puerto\n");
+	}
+}
+
+
 // ##############################################
 // Se encarga de estar constantemente buscando clientes.
 // cuando encuentra uno, lo envia a la cola ## falta implementarlo
 // ##############################################
-void look_clients(){
+void look_clients(){	
+	// Inicia el listener
+	int listener = begin_listener();
+
+	// Inicia el puerto
+	const int PORT = 7200;
+	begin_port(listener, PORT);
+
+	// Espera por clientes. Cuando encuentra uno, lo mte a la cola
+	printf(" - - - Enlazado al puerto\n");
 	while(1){
-		printf("###################################################\n");
-		sleep(1);
+		// Crea la estructura del cliente que se va a recibir
+		struct sockaddr_storage client;
+		unsigned int address_size = sizeof(client);
+		printf("\n - - - Esperando al cliente\n");
+
+		// Verifica si algun cliente necesita el servicio
+		int connect = accept(listener, (struct sockaddr*)&client, &address_size);
+		printf("- - - Atendiendo al cliente\n");
+		
+//.....................................................................................
+//.....................................................................................
+		// AQUI TOMA LA connect Y LO DEBE COLOCAR EN LA COLA
+		// ASI Recibe datos
+		char* buffer = malloc(10);
+		recv(connect, buffer, 10, 0);
+		printf("Recibidos: %s\n", buffer);
+//.....................................................................................
+//.....................................................................................
 	}
 	pthread_exit(0);
 }
 
 
-int main(){
-	
-	// Datos inutiles para respuesta
-	char * advice[] = {"4444", "1111", "3333", "2222", "888"};
-
-
-	// variables de sistema
-	const int PORT = 7200;
-
-
-	// Inicia el listener
-	int listener = open_socket();	
-	if (listener == -1){
-		printf("Error en listener\n");
-		return 0;
-	}
-
-
-	// Inicia el puerto 
-	bind_to_port(listener, PORT);
-	if (listen (listener, 10) == -1){
-		printf("No es posible escuchar en este puerto\n");
-		return 0;
-	}
-	printf(" - - - Enlazado al puerto\n");
-
-
+int main(){	
 	// Inicia el hilo que esta en constante busqueda de clientes
-	// ##### la funcion aun no est'a implementada
 	pthread_t look_for_clients;
 	pthread_create(&look_for_clients, NULL, (void*)look_clients, NULL);
 
-
 	// Ejecuta el algoritmo seleccionado
-	// ##### - - - - Falta implementarlo 
 	while(1){
-		struct sockaddr_storage client;
-		unsigned int addres_size = sizeof(client);
-		printf("\n- - - Esperando al cliente...\n");
+		printf("Ejecutando el algoritmo\n");
+		sleep(1);
 
-		// Verifica si algun cliente necesita el servicio
-		int connect = accept(listener, (struct sockaddr*)&client, &addres_size);
-		if (connect == -1){
-			printf("- - - No se pudo conectar\n");
-		}
-		printf("- - - Atendiendo al cliente\n");
-		
-		// Cuando se conecta un cliente 
-		// Debemos recorrer la cola e ir haciendo las cosas
-		// el hilo look_for_clients va llenando esa cola
+	}
+	pthread_join(look_for_clients, NULL);
+}
 
+/*
 		// Recibe datos
 		char* buffer = malloc(10);
 		int bytesRecibidos = recv(connect, buffer, 10, 0);
@@ -119,14 +135,10 @@ int main(){
 		printf("- - - Voy a dormir: %d\n", r);
 		sleep(r);
 		
-
 		// Envia datos
 		char *msg = advice[rand()%5];
 		send(connect, msg, strlen(msg), 0);
 		msg = NULL;
 		printf("- - - Le conteste a: %s\n", buffer);
 		close(connect);
-	}
-
-	pthread_join(look_for_clients, NULL);
-}
+*/
