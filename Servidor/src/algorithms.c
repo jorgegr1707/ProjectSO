@@ -46,9 +46,7 @@ void * job_scheduler_action(void * args)
 		{
 			burst = (rand() % 6) + 1;
 			priority = (rand() % 10) + 1;
-			insert_ready_queue(i, burst, priority, 0, 0);
-			
-
+			insert_ready_queue(i, burst, priority, clock_cpu, 0);
 		}
 	
 	}
@@ -62,28 +60,34 @@ void * cpu_scheduler_action(void * args)
 {
 	struct dnode *temp;
 	temp = remove_first();
-	int waiting_time;
 
 	if(flag)
 	{
-		while (temp != NULL)
+		while (1)
 		{
-			printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
+			if (temp != NULL)
+			{
+				printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
 
-			temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
+				temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
+				
+				if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
+				{
+					sleep(temp->process->burst);
+					temp->process->turn_around_time = temp->process->waiting_time + temp->process->burst;
+					append_end(temp->process->process_id, 0, temp->process->priority, temp->process->waiting_time, temp->process->turn_around_time);
+					printf("El proceso: %d ha terminado su ejecucion\n", temp->process->process_id);
+				}
+				else
+				{
+					sleep(burst);
+					temp->process->burst = temp->process->burst - burst;
+					temp->process->turn_around_time = temp->process->turn_around_time + temp->process->waiting_time + burst;
+					insert_ready_queue(temp->process->process_id, temp->process->burst, temp->process->priority, temp->process->waiting_time, temp->process->turn_around_time);
+				}
+
+			}
 			
-			if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
-			{
-				sleep(temp->process->burst);
-				append_end(temp->process->process_id, 0, temp->process->priority, temp->process->waiting_time, temp->process->waiting_time + temp->process->burst);
-				printf("El proceso: %d ha terminado su ejecucion\n", temp->process->process_id);
-			}
-			else
-			{
-				sleep(burst);
-				temp->process->burst = temp->process->burst - burst;
-				insert_ready_queue(temp->process->process_id, temp->process->burst, temp->process->priority, temp->process->waiting_time, temp->process->waiting_time + burst);
-			}
 			temp = remove_first();
 		}
 
@@ -101,7 +105,6 @@ void * clock_action(void * args)
 	while(flag)
 	{
 		clock_cpu++;
-		printf("Clock is: %d\n", clock_cpu);
 		sleep(1);
 	}
 }
@@ -121,6 +124,7 @@ int main()
     scanf("%d", &burst);
 
     flag = 1;
+    
     pthread_t clock_thread, job_scheduler, cpu_scheduler;
 	pthread_create(&clock_thread, NULL, (void*)clock_action, NULL);
 	pthread_create(&job_scheduler, NULL, (void*)job_scheduler_action, NULL);
