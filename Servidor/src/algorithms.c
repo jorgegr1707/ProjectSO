@@ -67,6 +67,8 @@ void * cpu_scheduler_action(void * args)
 		{
 			if (temp != NULL)
 			{
+				printf("%d\n", clock_cpu);
+				printf("%d\n", temp->process->arrival_time);
 
 				temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
 			
@@ -131,7 +133,7 @@ int main()
 	pthread_create(&job_scheduler, NULL, (void*)job_scheduler_action, NULL);
 	pthread_create(&cpu_scheduler, NULL, (void*)cpu_scheduler_action, NULL);
 
-    while(1)
+    while(flag)
     {
     	
 		pthread_join(clock_thread, NULL);
@@ -139,7 +141,11 @@ int main()
 		pthread_join(job_scheduler, NULL);
 		
 		pthread_join(cpu_scheduler, NULL);
+
+		scanf("%d", &flag);
+
 	}
+	// cuando el usuario decida se le deben mostrar las colas y cuando quiera terminar se le muestra la tabla y listo :)
     
 	
         
