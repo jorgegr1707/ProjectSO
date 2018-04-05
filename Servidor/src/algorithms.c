@@ -1,27 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <string.h>
-//
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <fcntl.h>
-#include <time.h>
-
-#include "../headers/linked_list.h"
-#include "linked_list.c"
-#include "../headers/process.h"
-
-int rr;
-int burst;
-int algorithm_type;
-int clock_cpu = 0;
-int flag; //keep running or not
-int id = 0;
-
-
 
 void insert_ready_queue(int id, int burst, int priority, int waiting_time, int turn_around_time)
 {
@@ -44,30 +20,30 @@ void insert_ready_queue(int id, int burst, int priority, int waiting_time, int t
 
 }
 
+// ##############################################
+// Se encarga de estar constantemente buscando clientes.
+// cuando encuentra uno, lo envia a la cola ## falta implementarlo
+// ##############################################
 void * job_scheduler_action(void * args)
 {
+	// Inicia el listener
+	int listener = begin_listener();
 
 	// Inicia el puerto
 	const int PORT = 7200;
 	begin_port(listener, PORT);
 
-	// Espera por clientes. Cuando encuentra uno, lo mte a la cola
-	printf(" - - - Enlazado al puerto\n");
+	// Espera por clientes. Cuando encuentra uno, lo ingresa a la cola
 	while(1)
 	{
 		// Crea la estructura del cliente que se va a recibir
 		struct sockaddr_storage client;
 		unsigned int address_size = sizeof(client);
-		printf("\n - - - Esperando al cliente\n");
 
 		// Verifica si algun cliente necesita el servicio
 		int connect = accept(listener, (struct sockaddr*)&client, &address_size);
-		printf("- - - Atendiendo al cliente\n");
 		
-//.....................................................................................
-//.....................................................................................
-		// AQUI TOMA LA connect Y LO DEBE COLOCAR EN LA COLA
-		// ASI Recibe datos
+		//recibe los datos del cliente
 		char* buffer = malloc(10);
 		recv(connect, buffer, 10, 0);
 		
@@ -78,12 +54,14 @@ void * job_scheduler_action(void * args)
 		splitted_buffer[0] = strtok(string,"-"); //burst
 		splitted_buffer[1] = strtok(NULL,"-");	//priority
 		insert_ready_queue(id, atoi(splitted_buffer[0]), atoi(splitted_buffer[1]), 0, 0);
+
+		char message[50]; 
+		strcpy(message, "Proceso recibido, con ID: ");
+		char result[50];
+		itoa(connect, result, 10);
+		strcat(message, result);
+		send(connect, message, strlen(message),0); //contesta al cliente
 		id++;
-
-
-		printf("Recibidos: %s\n", buffer);
-//.....................................................................................
-//.....................................................................................
 	}
 	pthread_exit(0);
 }
@@ -99,11 +77,10 @@ void * cpu_scheduler_action(void * args)
 		{
 			if (temp != NULL)
 			{
-				printf("%d\n", clock_cpu);
-				printf("%d\n", temp->process->arrival_time);
-
+				
 				temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
-			
+				printf("Tiempo de llegada: %d\n", temp->process->arrival_time);
+				printf("Timer: %d\n", clock_cpu);
 				printf("Ejecutando hilo: %d con burst: %d ha esperado: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
 
 				if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
@@ -143,46 +120,3 @@ void * clock_action(void * args)
 		sleep(1);
 	}
 }
-
-
-
-/*int main()
-{
-    
-            	
-    printf("\n\nWelcome to the server, please select one option");
-    printf("\n1. FCFS Algorithm \n2. SJF Algorithm\n3. HPF Algorithm\n4. RR Algorithm\n0. Exit\n");
-    printf("\nEnter Choice 0-4? : ");
-    scanf("%d", &algorithm_type);
-
-    printf("\nBurst: ");
-    scanf("%d", &burst);
-
-    flag = 1;
-    
-    pthread_t clock_thread, job_scheduler, cpu_scheduler;
-	pthread_create(&clock_thread, NULL, (void*)clock_action, NULL);
-	pthread_create(&job_scheduler, NULL, (void*)job_scheduler_action, NULL);
-	pthread_create(&cpu_scheduler, NULL, (void*)cpu_scheduler_action, NULL);
-
-    while(flag)
-    {
-    	
-		pthread_join(clock_thread, NULL);
-
-		pthread_join(job_scheduler, NULL);
-		
-		pthread_join(cpu_scheduler, NULL);
-
-		scanf("%d", &flag);
-
-	}
-	// cuando el usuario decida se le deben mostrar las colas y cuando quiera terminar se le muestra la tabla y listo :)
-    
-
-}*/
-
-
-
-
-

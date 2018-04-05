@@ -1,36 +1,5 @@
 #include "../headers/linked_list.h"
 
-/*int main()
-{
-    int n, ch, id = 0;
-    struct dnode *temp;
-            	
-    do
-    {
-        printf("\n\nOperations on doubly linked list");
-        printf("\n1. Append \n2. Remove\n3. Display\n0. Exit\n");
-        printf("\nEnter Choice 0-3? : ");
-        scanf("%d", &ch);
-        switch (ch)
-        {
-            case 1:
-                printf("\nEnter number: ");
-                scanf("%d", &n);
-                insert_by_burst(n, id);
-                id++;
-                break;
-            case 2:
-            	temp = remove_first();
-            	printf("%d\n", temp->process->process_id);
-                break;
-            case 3:
-                display();
-                break;
-        }
-    }while (ch != 0);
-}*/
-
-
 //Add a new node at the end of the double linked list
 void append(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
 {
@@ -184,7 +153,7 @@ struct dnode* remove_first()
 {
 	if(start == NULL)
 	{
-		printf("Linked List is empty\n");
+		//printf("Linked List is empty\n");
 		return NULL;
 	}
 
