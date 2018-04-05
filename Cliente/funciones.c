@@ -55,10 +55,11 @@ int create_client(char ip[], int port, struct info_pcb temp){
   send(cliente, data, strlen(data), 0);
 
   // Recibe los datos
-  char* buffer = malloc(10);
-  int bytesRecibidos = recv(cliente, buffer, 10, 0);
+  char* buffer = malloc(50);
+  int bytesRecibidos = recv(cliente, buffer, 50, 0);
   int val = atoi(buffer);
-  printf("ID del proceso: %d, %d, %d\n", temp.burst, temp.priority, val);
+  printf("%s", buffer);
+  printf("Burst:: %d, %d, %d\n", temp.burst, temp.priority, val);
   return val;
 }
 
