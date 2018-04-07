@@ -37,7 +37,7 @@ void * job_scheduler_action(void * args)
 
 	if (flag)
 	{
-		while(1) //Wait for clients
+		while(flag) //Wait for clients
 		{
 			// Create the struct of the client
 			struct sockaddr_storage client;
@@ -67,6 +67,7 @@ void * job_scheduler_action(void * args)
 			send(connect, message, strlen(message),0); //Send received message to client
 			id++; //Increment id for the next process
 		}
+		pthread_exit(0);
 
 	}
 	else
@@ -87,7 +88,7 @@ void * cpu_scheduler_action(void * args)
 
 	if(flag)
 	{
-		while (1)
+		while (flag)
 		{
 			if (temp != NULL)
 			{
@@ -120,7 +121,9 @@ void * cpu_scheduler_action(void * args)
 			}
 			// Look for the next process
 			temp = remove_first();
+
 		}
+		pthread_exit(0);
 
 	}
 	else
@@ -142,4 +145,42 @@ void * clock_action(void * args)
 		clock_cpu++; //This variable keeps the actual time
 		sleep(1);
 	}
+	pthread_exit(0);
+}
+
+void * terminalIn_thread_action(void * args)
+{
+	
+	printf("%d\n", terminal_entry);
+	while(1){
+		
+		scanf("%d", &terminal_entry);
+		
+		if(terminal_entry == 1)
+		{
+			sem_wait(&semaphore_thread);
+
+			printf("---- COLA ----\n");
+			display();
+
+			sem_post(&semaphore_thread);
+			terminal_entry = 0;
+			
+		} 
+		else if(terminal_entry == 2)
+		{
+
+			flag = 0;
+			printf("Finalizando procesos\n");
+			pthread_exit(0);
+
+		}
+		else 
+		{
+
+			terminal_entry = 0;
+		}
+
+	}
+
 }

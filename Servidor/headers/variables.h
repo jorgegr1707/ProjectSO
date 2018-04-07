@@ -5,7 +5,9 @@ int rr;
 int burst;
 int algorithm_type;
 int clock_cpu = 0;
-int flag; //keep running or not
+int flag; 			//keep running or not
 int id = 0;
+int terminal_entry = 0;		//display queue or turn off server
+sem_t semaphore_thread;
 
 #endif

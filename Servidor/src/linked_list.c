@@ -186,6 +186,10 @@ void display()
 
 	while(temp != NULL)
 	{
+		printf("id:\t");
+		printf("%d\t", temp->process->process_id);
+
+		printf("burst:\t");
 		printf("%d\n", temp->process->burst);
 		temp = temp->next;
 	}
