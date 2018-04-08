@@ -8,9 +8,11 @@ struct process
 {
 	int process_id;
 	int burst;
+	int burst_original;
 	int priority;
 	int waiting_time;
 	int arrival_time;
+	int arrival_time_original;
 	int turn_around_time;
 	int conection_id;
 };

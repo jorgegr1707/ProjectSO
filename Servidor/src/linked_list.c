@@ -1,7 +1,8 @@
 #include "../headers/linked_list.h"
+#include "../headers/variables.h"
 
 //Add a new node at the end of the double linked list
-void append(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
+void append(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time, int burst_original, int arrival_time_original)
 {
 	struct dnode *nptr, *temp = start;
 
@@ -10,9 +11,11 @@ void append(int id, int burst, int priority, int waiting_time, int arrival_time,
 	nptr->process = malloc(sizeof(struct process));
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
+	nptr->process->burst_original = burst_original;
 	nptr->process->process_id = id;
 	nptr->process->waiting_time = waiting_time;
 	nptr->process->arrival_time = arrival_time;
+	nptr->process->arrival_time_original = arrival_time_original;
 	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
@@ -33,7 +36,7 @@ void append(int id, int burst, int priority, int waiting_time, int arrival_time,
 	}
 }
 
-void append_end(int id, int burst, int priority, int waiting_time, int turn_around_time)
+void append_end(int id, int burst, int priority, int waiting_time, int turn_around_time, int arrival_time, int burst_original, int arrival_time_original)
 {
 	struct dnode *nptr, *temp = end;
 
@@ -42,9 +45,12 @@ void append_end(int id, int burst, int priority, int waiting_time, int turn_arou
 	nptr->process = malloc(sizeof(struct process));
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
+	nptr->process->burst_original = burst_original;
 	nptr->process->process_id = id;
 	nptr->process->waiting_time = waiting_time;
 	nptr->process->turn_around_time = turn_around_time;
+	nptr->process->arrival_time = arrival_time;
+	nptr->process->arrival_time_original = arrival_time_original;
 	nptr->next = NULL;
 	nptr->prev = NULL;
 
@@ -64,16 +70,18 @@ void append_end(int id, int burst, int priority, int waiting_time, int turn_arou
 	}
 }
 
-void insert_by_burst(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
+void insert_by_burst(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time, int burst_original, int arrival_time_original)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
 	nptr->process = malloc(sizeof(struct process));
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
+	nptr->process->burst_original = burst_original;
 	nptr->process->process_id = id;
 	nptr->process->waiting_time = waiting_time;
 	nptr->process->arrival_time = arrival_time;
+	nptr->process->arrival_time_original = arrival_time_original;
 	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
@@ -106,16 +114,18 @@ void insert_by_burst(int id, int burst, int priority, int waiting_time, int arri
 	}
 }
 
-void insert_by_priority(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time)
+void insert_by_priority(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time, int burst_original, int arrival_time_original)
 {
 	struct dnode *nptr, *temp = start;
 	nptr = malloc(sizeof(struct dnode));
 	nptr->process = malloc(sizeof(struct process));
 	nptr->process->priority = priority;
 	nptr->process->burst = burst;
+	nptr->process->burst_original = burst_original;
 	nptr->process->process_id = id;
 	nptr->process->waiting_time = waiting_time;
 	nptr->process->arrival_time = arrival_time;
+	nptr->process->arrival_time_original = arrival_time_original;
 	nptr->process->turn_around_time = turn_around_time;
 	nptr->next = NULL;
 	nptr->prev = NULL;
@@ -193,6 +203,46 @@ void display()
 		printf("%d\n", temp->process->burst);
 		temp = temp->next;
 	}
+
+}
+
+//Displays the final results
+void final_display()
+{
+	struct dnode *temp = start;
+	printf("\n");
+	printf("------------------------- Final results -------------------------\n\n");
+
+	printf("--------- Unfinished processes ---------\n\n");
+
+	while(temp != NULL)
+	{
+		printf("id:\t%d\tburst:\t%d\tpriority:\t%d\t",temp->process->process_id, temp->process->burst, temp->process->priority);
+		printf("WT:\t%d\tTAT:\t%d\tarrival time:\t%d\n",temp->process->waiting_time, temp->process->turn_around_time, temp->process->arrival_time_original);
+		temp = temp->next;
+	}
+
+	temp = end;
+
+	printf("\n--------- Finished processes ---------\n\n");
+
+	int executed = 0;
+	int w_time = 0;
+
+	while(temp != NULL)
+	{
+		printf("id:\t%d\tburst:\t%d\tpriority:\t%d\t",temp->process->process_id, temp->process->burst_original, temp->process->priority);
+		printf("WT:\t%d\tTAT:\t%d\tarrival time:\t%d\n",temp->process->waiting_time, temp->process->turn_around_time, temp->process->arrival_time_original);
+		executed++;
+		w_time += temp->process->waiting_time;
+		temp = temp->next; 
+	}
+
+	printf("\n----> Average Waiting Time:\t%f\n", ((float) w_time/ (float) executed));
+	printf("----> Executed processes:\t%d\n",executed);
+	printf("----> Idle CPU time:\t%d\n",(clock_cpu - cpu_working_time));
+
+
 
 }
 

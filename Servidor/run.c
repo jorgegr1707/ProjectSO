@@ -30,11 +30,11 @@ int main()
     	scanf("%d", &burst);
     }
     
-    printf("\n\nPresione 1 para desplegar la cola de procesos");
-    printf("\nPresione 2 para finalizr el servidor y desplegar las tablas\n\n");
+    printf("\n\nPress 1 to display the process queue");
+    printf("\nPress 2 for finishing the server and display the tables\n\n");
 
     sem_init(&semaphore_thread, 0, 1);  //Semaphore Initialized 
-
+    
     flag = 1;
     
     pthread_t clock_thread, job_scheduler, cpu_scheduler, terminalIn_thread;
@@ -43,7 +43,7 @@ int main()
 	pthread_create(&clock_thread, NULL, (void*)clock_action, NULL);
 	pthread_create(&job_scheduler, NULL, (void*)job_scheduler_action, NULL);
 	pthread_create(&cpu_scheduler, NULL, (void*)cpu_scheduler_action, NULL);
-
+    
     pthread_join(terminalIn_thread, NULL);
    	pthread_join(clock_thread, NULL);
 	pthread_join(job_scheduler, NULL);
@@ -51,6 +51,6 @@ int main()
 
     sem_destroy(&semaphore_thread);     //Semaphore destroyed
 
-    printf("\n-------------------------SERVIDOR FINALIZADO-----------------------------\n");
+    printf("\n-------------------------> SERVER FINALIZED <-----------------------------\n");
 
 }
