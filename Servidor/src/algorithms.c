@@ -34,12 +34,9 @@ void insert_ready_queue(int id, int burst, int priority, int waiting_time, int t
 // ###############################################################################
 void * job_scheduler_action(void * args)
 {
-	
-	int listener = begin_listener(); // Start listener
-
-	const int PORT = 7200; // Start port
+	int listener   = begin_listener(); // Start listener
+	const int PORT = 7200;             // Start port
 	begin_port(listener, PORT);
-
 	
 	while(flag) //Wait for clients
 	{
@@ -58,23 +55,16 @@ void * job_scheduler_action(void * args)
 		char string[10];
 		strcpy(string, buffer);
 		char *splitted_buffer[10];
-		// Make the split
 		splitted_buffer[0] = strtok(string,"-"); //burst
 		splitted_buffer[1] = strtok(NULL,"-");	//priority
-		insert_ready_queue(id, atoi(splitted_buffer[0]), atoi(splitted_buffer[1]), 0, 0, atoi(splitted_buffer[0]), -1);
+		insert_ready_queue(connect, atoi(splitted_buffer[0]), atoi(splitted_buffer[1]), 0, 0, atoi(splitted_buffer[0]), -1);
 
-		char message[50]; 
-		strcpy(message, "Process received, with ID: ");
-		char result[50];
+		// Send data
+		char result[6];
 		itoa(connect, result, 10);
-		strcat(message, result);
-		send(connect, message, strlen(message),0); //Send received message to client
-		id++; //Increment id for the next process
+		send(connect, result, strlen(result), 0); 
 	}
-	pthread_exit(0);
-
-	
-	
+	pthread_exit(0);	
 }
 
 
@@ -137,8 +127,7 @@ void * cpu_scheduler_action(void * args)
 	{
 		pthread_exit(0);
 
-	}
-	
+	}	
 }
 
 
@@ -201,5 +190,4 @@ void * terminalIn_thread_action(void * args)
 		}
 
 	}
-
 }

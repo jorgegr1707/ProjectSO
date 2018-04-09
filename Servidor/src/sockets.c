@@ -1,4 +1,9 @@
-
+// ##############################################
+// Pasa de entero a char[]
+// - ins value : Es el valor a convertir
+// - char *result : El char donde va a quedar el resultado
+// - int base : Es la base de Conversión, normalmente es 10
+// ##############################################
 char * itoa (int value, char *result, int base){
     // check that the base if valid
     if (base < 2 || base > 36) { *result = '\0'; return result; }
@@ -56,7 +61,6 @@ void bind_to_port(int socket, int port){
 		printf("error 2\n");
 	}
 }
-
 
 
 // ##############################################

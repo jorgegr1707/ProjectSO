@@ -8,60 +8,65 @@
 
 #include "estructuras.c"
 #include "funciones.c"
+#include "modoManual.c"
+#include "modoAutomatico.c"
+
 
 int main(int argc, char *argv[]) {
-  // Todos los hilos se guardan aqui
-  int thread_index = 0;
-  pthread_t threads[1000];
-  srand(time(0));
+
+  // Verifica el minimo de datos
+  if (argc < 4)
+  {
+    printf("Faltan datos \n");
+    return 0;
+  }
+
   
-  // Archivo de datos 
-  FILE *data_output_file = fopen (argv[1], "r");        
+  int minBurst = atoi(argv[1]);
+  int maxBurst = atoi(argv[2]);
   
-  // Intenta leer el archivo
-  if (data_output_file == NULL){
-    printf("El archivo %s no existe o no se puede abrir\n", argv[1]);
+  // Verifica los valores de burst aceptados
+  if (validar_bursts_entrada(minBurst, maxBurst) == 0)
+  {
+    printf("Los valores maximos y minimos no pueden ser aceptados\n");
     return 0;
   }
   
-  // Procesa el archivo          
-  char line[10];
-  while (feof(data_output_file) == 0){
-    fgets(line, 10, data_output_file);
-    char *burst    = malloc(3);
-    char *priority = malloc(3);
-    int i = 0, flag = 0;
-    while(line[i] != '\0'){
-      char val = line[i];
-      if (val == '\n')
-        break;
-      if (val == ' ')
-        flag = 1;
-      else{
-        if(flag == 0)
-          concatenar(burst, val);
-        if(flag == 1)
-          concatenar(priority, val);
-      }
-      i++;
+  // Modo manual 
+  if (argc == 4)
+  {
+    printf("\n#################################\n");
+    printf("### Ejecutando en modo manual ###\n");
+    printf("#################################\n\n");
+    FILE *data_output_file = fopen (argv[3], "r");
+    if (data_output_file == NULL)
+    {
+      printf("El archivo no existe o no se puede abrir\n");
+      return 0;
     }
-
-    // Solo envia los datos correctos
-    if(strcmp(burst, "")){
-      // Crea el hilo y lo pone a correr
-      struct info_pcb new_info_pcb = {atoi(burst), atoi(priority)};
-      pthread_create(&threads[thread_index], NULL, (void*)thread_action, (void*)&new_info_pcb);
-      
-      thread_index++;
-      sleep(getRandom(8));
-    }
+    // Ejecuta el modo manual
+    modo_manual(minBurst, maxBurst, data_output_file);
+    return 0;
   }
 
-  // Espera que todos los hilos terminen
-  for (int i = 0; i < thread_index; i++){
-    pthread_join(threads[i], NULL);
+  // Modo automatico
+  if (argc == 5)
+  {
+    printf("\n#####################################\n");
+    printf("### Ejecutando en modo automatico ###\n");
+    printf("#####################################\n\n");
+    int minTime = atoi(argv[3]);
+    int maxTime = atoi(argv[4]);
+    if (validar_tiempos_entrada(minTime, maxTime) == 0)
+    {
+      printf("Los valores maximos y minimos de tiempo no pueden ser aceptados\n");
+    }
+    modo_automatico(minBurst, maxBurst, minTime, maxTime);
+    return 0;
   }
 
-  printf("termine\n");
+  // Si faltan o sobran datos
+  printf("Datos erroneos\n");
   return 0;
+  
 }

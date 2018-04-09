@@ -36,6 +36,7 @@ void append(int id, int burst, int priority, int waiting_time, int arrival_time,
 	}
 }
 
+
 void append_end(int id, int burst, int priority, int waiting_time, int turn_around_time, int arrival_time, int burst_original, int arrival_time_original)
 {
 	struct dnode *nptr, *temp = end;
@@ -69,6 +70,7 @@ void append_end(int id, int burst, int priority, int waiting_time, int turn_arou
 		temp->next = nptr;
 	}
 }
+
 
 void insert_by_burst(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time, int burst_original, int arrival_time_original)
 {
@@ -113,6 +115,7 @@ void insert_by_burst(int id, int burst, int priority, int waiting_time, int arri
 		nptr->prev = temp;
 	}
 }
+
 
 void insert_by_priority(int id, int burst, int priority, int waiting_time, int arrival_time, int turn_around_time, int burst_original, int arrival_time_original)
 {
