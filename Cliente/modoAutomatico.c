@@ -23,10 +23,8 @@ int modo_automatico(int minBurst, int maxBurst, int minTime, int maxTime)
   	int minPriority = 1;
   	int maxPriority = 10;
 
-  	int x = 0;
-  	while(x != 3)
+  	while(1)
   	{
-  		x++;
   		// Produce los valores aleatorios
   		burst         = randon_range(minBurst, maxBurst);
   		priority      = randon_range(minPriority,  maxPriority);

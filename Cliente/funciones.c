@@ -64,7 +64,7 @@ int create_client(char ip[], int port, struct info_pcb temp)
   char* buffer = malloc(50);
   int bytesRecibidos = recv(client, buffer, 50, 0);
   int val = atoi(buffer);
-  printf("- - - - Proceso recibidocon el ID:  %s\n", buffer);
+  printf("- - - - Proceso recibido con el ID:  %s\n", buffer);
   return val;
 }
 

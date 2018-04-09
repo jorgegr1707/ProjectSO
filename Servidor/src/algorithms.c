@@ -84,7 +84,7 @@ void * cpu_scheduler_action(void * args)
 			{
 				// Set the process waiting time 
 				temp->process->waiting_time = temp->process->waiting_time + (clock_cpu - temp->process->arrival_time);
-				printf("Executing process: %d burst: %d has waited: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
+				printf("- - - Executing process: %d, burst: %d, has waited: %d\n", temp->process->process_id,temp->process->burst, temp->process->waiting_time);
 
 				if(rr == 0 || (rr == 1 && temp->process->burst <= burst))
 				{
@@ -98,7 +98,7 @@ void * cpu_scheduler_action(void * args)
 					append_end(temp->process->process_id, 0, temp->process->priority, temp->process->waiting_time, temp->process->turn_around_time, 
 						temp->process->arrival_time, temp->process->burst_original, temp->process->arrival_time_original);
 					
-					printf("Process: %d has finished.\n", temp->process->process_id);
+					printf("- - - Process: %d has finished.\n", temp->process->process_id);
 				}
 				else
 				{

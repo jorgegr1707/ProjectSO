@@ -18,21 +18,34 @@
 
 int main()
 {	
-	
-	printf("\n\nWelcome to the server, please select one option");
-    printf("\n1. FCFS Algorithm \n2. SJF Algorithm\n3. HPF Algorithm\n4. RR Algorithm\n0. Exit\n");
-    printf("\nEnter Choice 0-4? : ");
+    printf("\n\n");
+    printf("#########################################################\n");
+    printf("###  Welcome to the server, please select one option  ###\n");
+    printf("#########################################################\n");
+    printf("  1. FCFS Algorithm\n");
+    printf("  2. SJF Algorithm\n");
+    printf("  3. HPF Algorithm\n");
+    printf("  4. RR Algorithm\n");
+    printf("  0. Exit\n");
+    printf("#########################################################\n");
+    printf("Enter Choice 0-4? : ");
     scanf("%d", &algorithm_type);
+    printf("#########################################################\n");
 
     if (algorithm_type == 4)
     {
     	printf("\nQuantum: ");
     	scanf("%d", &burst);
     }
-    
-    printf("\n\nPress 1 to display the process queue");
-    printf("\nPress 2 for finishing the server and display the tables\n\n");
+    printf("\n#########################################################\n");
+    printf("Instructions:\n");
+    printf("- Press 1 to display the process queue\n");
+    printf("- Press 2 for finishing the server and display the tables\n");
+    printf("#########################################################\n");
 
+    printf("\n#################################\n");
+    printf("- - - The server is running - - -\n");
+    printf("#################################\n\n");
     sem_init(&semaphore_thread, 0, 1);  //Semaphore Initialized 
     
     flag = 1;
