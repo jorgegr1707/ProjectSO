@@ -1,6 +1,10 @@
 // ###############################################################################
 // This function receives the necessaries parameters to insert in the ready queue 
 // depending of the algorithm selectionated
+// Parameters: Process Id, Process Burst, Process Priority, Process waiting time,
+//			   Process turn around time, Process Original Burst, Process Original
+//			   time around time
+// These parameters are the PCB information
 // ###############################################################################
 void insert_ready_queue(int id, int burst, int priority, int waiting_time, int turn_around_time, int burst_original, int arrival_time_original)
 {

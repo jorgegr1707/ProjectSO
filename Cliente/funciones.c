@@ -120,7 +120,7 @@ int getRandom(int limit)
 //############################################################# 
 int validar_bursts_entrada(int minBurst, int maxBurst)
 {
-  if ((minBurst >= maxBurst) || (minBurst < 0) || (maxBurst < 0))
+  if ((minBurst >= maxBurst) || (minBurst <= 0) || (maxBurst <= 0))
   {
     return 0;
   }
